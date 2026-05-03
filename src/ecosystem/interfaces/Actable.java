@@ -2,9 +2,11 @@ package ecosystem.interfaces;
 
 import ecosystem.core.Environment;
 
-public interface Movable
+public interface Actable
 {
 
+
     //Methods
-    public boolean move(Environment env);
+    public void act(Environment env);
+
 }
