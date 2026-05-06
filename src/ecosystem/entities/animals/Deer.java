@@ -9,7 +9,7 @@ public class Deer extends Animal
     // ============ Constructors ============
     public Deer(Position position)
     {
-        super(position, 'D', true, 70, 100, 0,new HerbivoreBehavior(),
+        super(position, 'D', true, 70, 70, 0,new HerbivoreBehavior(),
                 new EscapeMovement());
     }
 

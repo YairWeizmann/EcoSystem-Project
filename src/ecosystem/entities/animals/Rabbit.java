@@ -19,7 +19,7 @@ public class Rabbit extends Animal implements Reproducible
 
     public Rabbit(Position position)
     {
-        super(position, 'R', true,50, 100, 0, new HerbivoreBehavior(), new RandomMovement());
+        super(position, 'R', true,50, 50, 0, new HerbivoreBehavior(), new RandomMovement());
     }
 
     // ============ Constructors ============
