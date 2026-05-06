@@ -8,9 +8,9 @@ import ecosystem.interfaces.Actable;
 public class LivingEntity extends AbstractEntity implements Actable
 {
     // ===================== Fields =====================
-    double m_energy;
-    double m_maxEnergy;
-    double m_age = 0f;
+    private double m_energy;
+    private double m_maxEnergy;
+    private double m_age = 0f;
 
     // ===================== Constructors =====================
 
@@ -41,15 +41,14 @@ public class LivingEntity extends AbstractEntity implements Actable
     @Override
     public void act(Environment env)
     {
-       m_age +=1; // Up The Age By 1
-       m_energy -= 2; // Minus 2 Energy
+        m_age +=1; // Up The Age By 1
+        m_energy -= 2; // down the energy by 2
 
-       if(m_energy <= 0)
+        if(m_energy <= 0)
            this.setIs_alive(false);
     }
 
     // ===================== Getters & Setters =====================
-
 
     public double getM_energy() {
         return m_energy;

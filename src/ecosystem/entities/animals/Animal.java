@@ -72,7 +72,14 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
     @Override
     public void act(Environment env )
     {
-        super.act(env); //Father Acts (Removing Energy By 2 , age +1 , checks if Energy Below Zero)
+        super.act(env);//Father Acts (Removing Energy By 2 , age +1 , checks if Energy Below Zero)
+
+        // check if is alive:
+        if (!getIs_alive())
+            return;
+
+
+
         sense(env); // Checks for NearBy Entities
 
 
