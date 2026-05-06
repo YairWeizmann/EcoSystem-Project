@@ -32,6 +32,19 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
 
 
 
+    // ===================== getters & setters =====================
+
+
+    public FeedingBehavior getM_eatBehavior()
+    {
+        return m_eatBehavior;
+    }
+
+    public void setM_eatBehavior(FeedingBehavior m_eatBehavior)
+    {
+        this.m_eatBehavior = m_eatBehavior;
+    }
+
     //Interface Methods
     //Moveable
     @Override
@@ -78,15 +91,7 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
         if (!getIs_alive())
             return;
 
-
-
         sense(env); // Checks for NearBy Entities
 
-
-
-
     }
-
-
-
 }
