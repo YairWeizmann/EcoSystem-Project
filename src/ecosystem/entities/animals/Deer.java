@@ -1,6 +1,5 @@
 package ecosystem.entities.animals;
 import ecosystem.behaviors.EscapeMovement;
-import ecosystem.behaviors.FeedingBehavior;
 import ecosystem.behaviors.HerbivoreBehavior;
 import ecosystem.core.Position;
 
@@ -12,6 +11,5 @@ public class Deer extends Animal
         super(position, 'D', true, 70, 70, 0,new HerbivoreBehavior(),
                 new EscapeMovement());
     }
-
 
 }
