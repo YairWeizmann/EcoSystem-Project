@@ -1,6 +1,11 @@
 package ecosystem.entities;
 
+import ecosystem.core.Position;
+
 public class StaticEntity extends AbstractEntity
 {
-    int YTest;
+    // ===================== FIELDS =====================
+
+    // ===================== Constructors =====================
+
 }

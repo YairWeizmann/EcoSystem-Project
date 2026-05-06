@@ -1,6 +1,6 @@
 package ecosystem.behaviors;
 
-public class MovementStrategy
+public interface MovementStrategy
 {
 
 }

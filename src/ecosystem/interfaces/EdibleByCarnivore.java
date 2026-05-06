@@ -1,4 +1,6 @@
 package ecosystem.interfaces;
 
-public interface EdibleByCarnivore {
+public interface EdibleByCarnivore
+{
+  
 }
