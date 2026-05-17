@@ -64,7 +64,7 @@ public abstract class AbstractEntity
         if(position == null)
             return false;
 
-        this.m_position = m_position;
+        this.m_position = position;
         return true;
     }
 

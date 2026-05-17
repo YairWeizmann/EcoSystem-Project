@@ -2,10 +2,16 @@ package ecosystem.entities;
 
 import ecosystem.core.Position;
 
-public class StaticEntity extends AbstractEntity
+public abstract class StaticEntity extends AbstractEntity
 {
-    // ===================== FIELDS =====================
-
     // ===================== Constructors =====================
+     public StaticEntity(Position pos,char symbol)
+     {
+         super(pos,symbol,true);
+     }
+
+    // ===================== Getters / Setters =====================
+
+
 
 }

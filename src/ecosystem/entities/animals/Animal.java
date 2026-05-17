@@ -8,17 +8,19 @@ import ecosystem.entities.AbstractEntity;
 import ecosystem.entities.LivingEntity;
 import ecosystem.interfaces.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("all")
 public abstract class Animal extends LivingEntity implements Movable , Eater ,
-        EdibleByCarnivore, Sensory , Consumable
+  EdibleByCarnivore, Sensory , Consumable
 {
 
     // ===================== FIELDS =====================
     private FeedingBehavior m_eatBehavior;
     private MovementStrategy m_animalMove;
     private int m_visionRange;
+
 
     // ===================== Constructors =====================
     public Animal(Position position, char symbol , boolean is_alive, double energy , double maxEnergy , double age ,
@@ -45,27 +47,55 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
         this.m_eatBehavior = m_eatBehavior;
     }
 
+    public MovementStrategy getM_animalMove()
+    {
+        return m_animalMove;
+    }
+
+    public void setM_animalMove(MovementStrategy m_animalMove) {
+        this.m_animalMove = m_animalMove;
+    }
+
     //Interface Methods
     //Moveable
     @Override
     public boolean move(Environment env) //Move
     {
-        return true;
+        if (this.m_animalMove == null)
+        {
+            return false;
+        }
+
+        return this.m_animalMove.move(this, env);
+
     }
 
     //Eater
     @Override
     public boolean eat(Consumable target) //eat a Consumable
     {
-     System.out.println("Eating");
-     return true;
+      if(this.m_eatBehavior == null)
+          return false;
+
+        double newEnergy = this.getM_energy() + target.getNutritionValue();
+
+        if (newEnergy > this.getM_maxEnergy())
+            newEnergy = this.getM_maxEnergy();
+
+        this.setM_energy(newEnergy);
+        target.onConsumed();   // plant dies , water consumed , etc
+
+        return true;
     }
 
     //Sensory
     @Override
     public List<AbstractEntity> sense(Environment env) // get all Entities in Distance // Later
     {
-      return null;
+        if (env == null)
+            return new ArrayList<>();   // import java.util.ArrayList;
+
+        return env.getNearByEntities(this.getM_position());
     }
 
     //Consumable
@@ -85,13 +115,21 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
     @Override
     public void act(Environment env )
     {
-        super.act(env);//Father Acts (Removing Energy By 2 , age +1 , checks if Energy Below Zero)
+        super.act(env); //Father Acts (Removing Energy By 2 , age +1 , checks if Energy Below Zero)
 
         // check if is alive:
         if (!getIs_alive())
             return;
 
-        sense(env); // Checks for NearBy Entities
+        List<AbstractEntity> nearby = sense(env);
+
+        boolean ate = false;
+        if (m_eatBehavior != null && nearby != null && !nearby.isEmpty())
+        {
+            ate = m_eatBehavior.eat(this, nearby);
+        }
+        if (!ate)  //Nothing edible around than move
+           move(env);
 
     }
 }

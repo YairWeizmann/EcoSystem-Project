@@ -4,11 +4,12 @@ import ecosystem.behaviors.HerbivoreBehavior;
 import ecosystem.behaviors.RandomMovement;
 import ecosystem.core.Environment;
 import ecosystem.core.Position;
+import ecosystem.interfaces.EdibleByHerbivore;
 import ecosystem.interfaces.Reproducible;
 
 import java.util.Random;
 
-public class Rabbit extends Animal implements Reproducible
+public class Rabbit extends Animal implements Reproducible , EdibleByHerbivore
 {
 
     // ============ Fields ============
@@ -38,10 +39,18 @@ public class Rabbit extends Animal implements Reproducible
 
             if (success)
             {
-                // TODO: 1. Get an empty position near the rabbit from the environment
-                // TODO: 2. Create a new baby rabbit -> new Rabbit(emptyPosition)
-                // TODO: 3. Add the new baby rabbit to the environment -> env.addEntity(babyRabbit)
-                System.out.println("A new rabbit was born!");
+                //Try To Get an empty position near the rabbit from the environment
+                Position freePos = env.getFreeNearbyPos(this.getM_position());
+                if(freePos != null)
+                {
+                    //Create a new baby rabbit -> new Rabbit(emptyPosition)
+                    Rabbit babyRabbit = new Rabbit(freePos);
+                    env.addEntity(babyRabbit);// Add the new baby rabbit to the environment -> env.addEntity(babyRabbit)
+
+                    System.out.println("A new rabbit was born!");
+                }
+                System.out.println("no Near By Free Positions");
+
             }
         }
     }
@@ -58,4 +67,7 @@ public class Rabbit extends Animal implements Reproducible
 
         return false;
     }
+
+
+    // ============ Helper Methods ============
 }
