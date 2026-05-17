@@ -1,6 +1,8 @@
 package ecosystem.core;
 
+import ecosystem.behaviors.MovementStrategy;
 import ecosystem.entities.AbstractEntity;
+import ecosystem.entities.animals.Animal;
 import ecosystem.interfaces.Actable;
 
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ import java.util.List;
 public class SimulationEngine
 {
     // ============ Fields ============
-    Environment m_environment;
+    private Environment m_environment;
 
 
     // ============ Constructors ============
@@ -29,8 +31,9 @@ public class SimulationEngine
               ((Actable) entity).act(m_environment);
       }
 
-      m_environment.removeDeadEntities();
-
+      this.m_environment.removeDeadEntities();
+      System.out.println("New Map");
+      this.m_environment.printMap();
     }
 
 

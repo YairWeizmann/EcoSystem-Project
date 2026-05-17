@@ -1,19 +1,36 @@
 package ecosystem.behaviors;
 
 import ecosystem.core.Environment;
+import ecosystem.core.Position;
 import ecosystem.entities.animals.Animal;
+import ecosystem.entities.animals.Rabbit;
 
-public class RandomMovement implements MovementStrategy {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class RandomMovement implements MovementStrategy
+{
 
     @Override
-    public boolean move(Animal animal, Environment env) {
+    public boolean move(Animal animal, Environment env)
+    {
+        List<Position> freePositions = env.getFreeNearbyPositions(animal.getM_position());
 
-        // TODO: Implement random movement logic
-        // 1. Get current position of the animal
-        // 2. Ask Environment for all valid empty adjacent positions
-        // 3. Pick one position randomly
-        // 4. Update the animal's position to the new one
+        if (freePositions.isEmpty())
+        {
+            System.out.println("Not Found Free Positions to Go To");
+            return false;
+        }
 
+
+        Random randomPosition = new Random(); // Randomize Generator
+        int randomIndex = randomPosition.nextInt(freePositions.size()); //Chooses Random Position from free Positions
+
+
+        Position newRandomPosition = freePositions.get(randomIndex);
+        animal.setM_position(newRandomPosition);
         return true;
+
     }
 }

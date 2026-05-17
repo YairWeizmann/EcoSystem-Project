@@ -1,5 +1,15 @@
 package ecosystem.entities.resources;
 
-public class Rock
+import ecosystem.core.Position;
+
+public class Rock extends Resource
 {
+    //Fields
+    boolean blocksMovement = true;
+
+    //Constructor
+    public Rock(Position pos)
+    {
+        super(pos,'X');
+    }
 }

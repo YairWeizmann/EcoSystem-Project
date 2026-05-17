@@ -14,29 +14,30 @@ public class HerbivoreBehavior implements FeedingBehavior {
 
         for (AbstractEntity entity : nearby) // Loop through all nearby entities
         {
+            // Skip the eater itself — no self-eating
+            if (entity == eater)
+                continue;
 
             // Check if the entity is alive AND has the herbivore-edible tag
             if (entity.getIs_alive() && entity instanceof EdibleByHerbivore)
             {
-
-                // Cast the entity to Consumable so we can get its nutrition
                 Consumable plant = (Consumable) entity;
 
                 // Calculate new energy (do not exceed max energy)
                 double newEnergy = eater.getM_energy() + plant.getNutritionValue();
-                if (newEnergy > eater.getM_energy())
+                if (newEnergy > eater.getM_maxEnergy())
                 {
-                    newEnergy = eater.getM_energy();
+                    newEnergy = eater.getM_maxEnergy();
                 }
 
                 eater.setM_energy(newEnergy); // Update eater's energy
+                plant.onConsumed();           // Trigger the plant's consumed logic
 
-                plant.onConsumed();  // Trigger the plant's consumed logic
-
-                return true; // Return true because we successfully ate something
+                return true; // Successfully ate something
             }
         }
 
-        return false; // Return false if nothing edible was found
+        return false; // Nothing edible found
     }
+
 }
