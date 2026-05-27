@@ -1,13 +1,4 @@
-import Model.ecosystem.core.Environment;
-import Model.ecosystem.core.Position;
-import Model.ecosystem.core.SimulationEngine;
-import Model.ecosystem.entities.animals.Lion;
-import Model.ecosystem.entities.animals.Rabbit;
-import Model.ecosystem.entities.animals.Deer;
-import Model.ecosystem.entities.plants.OakTree;
-import Model.ecosystem.entities.plants.Flower;
-import Model.ecosystem.entities.resources.Water;
-import View.EcoSystemFrame;
+import View.Frame.EcoSystemFrame;
 
 void main()
 {

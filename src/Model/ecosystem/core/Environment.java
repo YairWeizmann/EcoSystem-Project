@@ -93,6 +93,10 @@ public class Environment
         m_Spawnedentities.removeIf(entity -> entity != null && !entity.getIs_alive());
     }
 
+    public void resetEntities()
+    {
+        this.m_Spawnedentities.clear();
+    }
 
     // ============ MAP METHODS ============
 
@@ -225,5 +229,15 @@ public class Environment
     public int getCols()
     {
         return cols;
+    }
+
+    public AbstractEntity getEntityAt(int row , int col)
+    {
+        for (AbstractEntity entity : m_Spawnedentities)
+        {
+            if(entity.getM_position().getRow() == row && entity.getM_position().getCol() == col)
+                return entity;
+        }
+        return null;
     }
 }

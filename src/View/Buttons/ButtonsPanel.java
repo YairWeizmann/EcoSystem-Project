@@ -1,7 +1,7 @@
 package View.Buttons;
 
 import Model.ecosystem.core.SimulationEngine;
-import View.EcoSystemFrame;
+import View.Frame.EcoSystemFrame;
 import View.Map.MapPanel;
 
 import javax.swing.*;
@@ -16,6 +16,7 @@ public class ButtonsPanel extends JPanel
     private JButton m_stopButton;
     private JButton m_resetButton;
     private JButton m_addEntityButton;
+    private JButton m_statsButton;
 
     private EcoSystemFrame m_frame;
     private SimulationEngine m_simulationEngine;
@@ -47,12 +48,14 @@ public class ButtonsPanel extends JPanel
         m_stopButton = new JButton("Stop");
         m_resetButton = new JButton("Reset");
         m_addEntityButton = new JButton("Add Entity");
+        m_statsButton = new JButton("Stats");
 
         m_tickButton.addActionListener(this::onClickTick);
         m_runButton.addActionListener(this::onClickRun);
         m_stopButton.addActionListener(this::onClickStop);
         m_resetButton.addActionListener(this::onClickReset);
         m_addEntityButton.addActionListener(this::onClickAddEntity);
+        m_statsButton.addActionListener(this::onClickStats);
     }
 
     private void addComponents()
@@ -62,6 +65,7 @@ public class ButtonsPanel extends JPanel
         add(m_stopButton);
         add(m_resetButton);
         add(m_addEntityButton);
+        add(m_statsButton);
     }
 
     private void initTimer()
@@ -95,11 +99,18 @@ public class ButtonsPanel extends JPanel
     private void onClickReset(ActionEvent event)
     {
         System.out.println("Reset clicked");
-        // later: clear environment and repaint map
+        m_mapPanel.getM_environment().resetEntities();
+        m_mapPanel.repaint();
     }
 
     private void onClickAddEntity(ActionEvent event)
     {
         m_frame.toggleEntitySpawnPanel();
     }
+
+    private void onClickStats(ActionEvent event)
+    {
+       m_frame.toggleStatsPanel();
+    }
+
 }

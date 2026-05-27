@@ -1,10 +1,13 @@
-package View;
+package View.Frame;
 
 import Model.ecosystem.core.Environment;
 import Model.ecosystem.core.SimulationEngine;
 import View.Buttons.ButtonsPanel;
+import View.Entity.EntityInfoPanel;
 import View.Entity.EntitySpawnPanel;
+import View.Info.InfoPanel;
 import View.Map.MapPanel;
+import View.Stats.StatsPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,6 +24,8 @@ public class EcoSystemFrame extends JFrame
     private MapPanel m_MainMapPanel;
     private ButtonsPanel m_MainButtonsPanel;
     private EntitySpawnPanel m_entitySpawnPanel;
+    private StatsPanel m_StatsPanel;
+    private InfoPanel m_InfoPanel;
 
 
     // ===================== CONSTRUCTORS =====================
@@ -30,10 +35,7 @@ public class EcoSystemFrame extends JFrame
         setLayout(new BorderLayout());
 
         initCore();
-
-        createMapPanel();
-        createButtonsPanel();
-        createEntitySpawnPanel();
+        createAllPanels();
 
         setAdjustments();
     }
@@ -44,11 +46,7 @@ public class EcoSystemFrame extends JFrame
         setLayout(new BorderLayout());
 
         initCore();
-
-        createMapPanel();
-        createButtonsPanel();
-        createEntitySpawnPanel();
-
+        createAllPanels();
         setAdjustments();
     }
 
@@ -88,7 +86,7 @@ public class EcoSystemFrame extends JFrame
     // ===================== PANEL METHODS =====================
     private void createMapPanel()
     {
-        m_MainMapPanel = new MapPanel(m_environment);
+        m_MainMapPanel = new MapPanel(m_environment,m_InfoPanel);
         add(m_MainMapPanel, BorderLayout.CENTER);
     }
 
@@ -97,6 +95,8 @@ public class EcoSystemFrame extends JFrame
         m_MainButtonsPanel = new ButtonsPanel(this, m_simulationEngine, m_MainMapPanel);
         add(m_MainButtonsPanel, BorderLayout.SOUTH);
     }
+
+
 
     private void createEntitySpawnPanel()
     {
@@ -108,8 +108,39 @@ public class EcoSystemFrame extends JFrame
         m_MainMapPanel.add(m_entitySpawnPanel);
     }
 
+    private void createStatsPanel()
+    {
+        m_StatsPanel = new StatsPanel(m_simulationEngine.getSimulationStats());
+        add(m_StatsPanel,BorderLayout.NORTH);
+
+        m_simulationEngine.addStatsListener(m_StatsPanel);
+    }
+
+    private void createInfoPanel()
+    {
+        m_InfoPanel = new InfoPanel();
+        add(m_InfoPanel,BorderLayout.EAST);
+    }
+
+
+    private void createAllPanels()
+    {
+        createInfoPanel();
+        createMapPanel();
+        createButtonsPanel();
+        createEntitySpawnPanel();
+        createStatsPanel();
+    }
 
     // ===================== UI METHODS =====================
+    public void toggleStatsPanel()
+    {
+        if(this.m_StatsPanel != null)
+        {
+            this.m_StatsPanel.toggleStatsPanel();
+        }
+    }
+
     public void toggleEntitySpawnPanel()
     {
         m_entitySpawnPanel.setVisible(!m_entitySpawnPanel.isVisible());

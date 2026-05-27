@@ -1,7 +1,7 @@
 package Model.ecosystem.entities.animals;
 
-import Model.ecosystem.behaviors.FeedingBehavior;
-import Model.ecosystem.behaviors.MovementStrategy;
+import Model.ecosystem.behaviors.Animals.FeedingBehavior;
+import Model.ecosystem.behaviors.Animals.MovementStrategy;
 import Model.ecosystem.core.Environment;
 import Model.ecosystem.core.Position;
 import Model.ecosystem.entities.AbstractEntity;

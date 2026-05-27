@@ -1,7 +1,7 @@
 package Model.ecosystem.entities.animals;
 
-import Model.ecosystem.behaviors.HerbivoreBehavior;
-import Model.ecosystem.behaviors.RandomMovement;
+import Model.ecosystem.behaviors.Animals.HerbivoreBehavior;
+import Model.ecosystem.behaviors.Animals.RandomMovement;
 import Model.ecosystem.core.Environment;
 import Model.ecosystem.core.Position;
 import Model.ecosystem.interfaces.EdibleByHerbivore;

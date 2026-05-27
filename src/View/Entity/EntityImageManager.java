@@ -19,9 +19,13 @@ public class EntityImageManager
     private Animation m_rabbitIdleAnimation;
     private Animation m_lionIdleAnimation;
 
-    // Static Images
+    // Static Images Plants
     private BufferedImage m_oakTree;
     private BufferedImage m_flower;
+
+    //Static Images Resources
+    private BufferedImage m_rock;
+    private BufferedImage m_water;
 
     // All animations list
     private List<Animation> m_animalsAnimations;
@@ -39,6 +43,8 @@ public class EntityImageManager
 
          loadOakTreeImage();
          loadFlowerImage();
+         loadWaterImage();
+         loadRockImage();
     }
 
 
@@ -57,31 +63,35 @@ public class EntityImageManager
         switch(currentEntityType)
         {
             case Deer:
-                widthAdjust = 25;
-                heightAdjust = 25;
+
                 graphics.drawImage(m_deerIdleAnimation.getCurrentFrame(), colX, rowY, size + widthAdjust , size + heightAdjust, null);
                 break;
 
             case Rabbit:
-                widthAdjust = 15;
-                heightAdjust = 15;
+
                 graphics.drawImage(m_rabbitIdleAnimation.getCurrentFrame(), colX, rowY, size + widthAdjust, size + heightAdjust, null);
                 break;
 
             case Lion:
-                widthAdjust = 30;
-                heightAdjust = 30;
+
                 graphics.drawImage(m_lionIdleAnimation.getCurrentFrame(), colX, rowY, size + widthAdjust, size + heightAdjust, null);
                 break;
 
             case OakTree:
-                heightAdjust = 40;
-                widthAdjust = 35;
+
                 graphics.drawImage(m_oakTree, colX, rowY, size + widthAdjust, size + heightAdjust, null);
                 break;
 
             case Flower:
                 graphics.drawImage(m_flower, colX, rowY, size, size, null);
+                break;
+
+            case Water:
+                graphics.drawImage(m_water,colX,rowY,size,size,null);
+                break;
+
+            case Rock:
+                graphics.drawImage(m_rock,colX,rowY,size,size,null);
                 break;
 
             default:
@@ -199,4 +209,16 @@ public class EntityImageManager
     {
         m_flower = loadImage("src/Assets/plants/Flower.png");
     }
+
+    // ===================== LOAD Resources IMAGES =====================
+    private void  loadWaterImage()
+    {
+        m_water = loadImage("src/Assets/Resources/Water.png");
+    }
+
+    private void loadRockImage()
+    {
+        m_rock = loadImage("src/Assets/Resources/Rock.png");
+    }
+
 }
