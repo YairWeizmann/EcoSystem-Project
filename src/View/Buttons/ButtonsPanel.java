@@ -1,16 +1,18 @@
 package View.Buttons;
 
+import Controller.Buttons.ButtonsController;
 import Model.ecosystem.core.SimulationEngine;
 import View.Frame.EcoSystemFrame;
 import View.Map.MapPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 public class ButtonsPanel extends JPanel
 {
     // ===================== FIELDS =====================
+
+    // Main simulation control buttons
     private JButton m_tickButton;
     private JButton m_runButton;
     private JButton m_stopButton;
@@ -18,31 +20,38 @@ public class ButtonsPanel extends JPanel
     private JButton m_addEntityButton;
     private JButton m_statsButton;
 
+    // References kept from the older structure / available if needed later
     private EcoSystemFrame m_frame;
     private SimulationEngine m_simulationEngine;
     private MapPanel m_mapPanel;
 
+    // Timer reference, currently handled by the controller
     private Timer m_runTimer;
+
+    // Controller that handles what each button actually does
+    ButtonsController m_buttonsController;
 
 
     // ===================== CONSTRUCTORS =====================
-    public ButtonsPanel(EcoSystemFrame frame, SimulationEngine simulationEngine, MapPanel mapPanel)
-    {
-        this.m_frame = frame;
-        this.m_simulationEngine = simulationEngine;
-        this.m_mapPanel = mapPanel;
 
+    public ButtonsPanel(ButtonsController buttonsController)
+    {
+        // Save the controller so the panel can forward button clicks to it
+        this.m_buttonsController = buttonsController;
+
+        // Simple layout that places the buttons in one row with spacing
         setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
         initComponents();
         addComponents();
-        initTimer();
     }
 
 
     // ===================== INIT METHODS =====================
+
     private void initComponents()
     {
+        // Create all the buttons that control the simulation
         m_tickButton = new JButton("Tick");
         m_runButton = new JButton("Run");
         m_stopButton = new JButton("Stop");
@@ -50,16 +59,18 @@ public class ButtonsPanel extends JPanel
         m_addEntityButton = new JButton("Add Entity");
         m_statsButton = new JButton("Stats");
 
-        m_tickButton.addActionListener(this::onClickTick);
-        m_runButton.addActionListener(this::onClickRun);
-        m_stopButton.addActionListener(this::onClickStop);
-        m_resetButton.addActionListener(this::onClickReset);
-        m_addEntityButton.addActionListener(this::onClickAddEntity);
-        m_statsButton.addActionListener(this::onClickStats);
+        // Connect each button to the matching controller method
+        m_tickButton.addActionListener(e -> m_buttonsController.onTickClicked());
+        m_runButton.addActionListener(e -> m_buttonsController.onRunClicked());
+        m_stopButton.addActionListener(e -> m_buttonsController.onStopClicked());
+        m_resetButton.addActionListener(e -> m_buttonsController.onResetClicked());
+        m_addEntityButton.addActionListener(e -> m_buttonsController.onAddEntityClicked());
+        m_statsButton.addActionListener(e -> m_buttonsController.onStatsClicked());
     }
 
     private void addComponents()
     {
+        // Add the buttons to the panel in the order they should appear
         add(m_tickButton);
         add(m_runButton);
         add(m_stopButton);
@@ -67,50 +78,4 @@ public class ButtonsPanel extends JPanel
         add(m_addEntityButton);
         add(m_statsButton);
     }
-
-    private void initTimer()
-    {
-        m_runTimer = new Timer(500, e -> {
-            m_simulationEngine.tick();
-            m_mapPanel.repaint();
-        });
-    }
-
-
-    // ===================== BUTTON METHODS =====================
-    private void onClickTick(ActionEvent event)
-    {
-        m_simulationEngine.tick();
-        m_mapPanel.repaint();
-    }
-
-    private void onClickRun(ActionEvent event)
-    {
-        if(!m_runTimer.isRunning())
-            m_runTimer.start();
-    }
-
-    private void onClickStop(ActionEvent event)
-    {
-        if(m_runTimer.isRunning())
-            m_runTimer.stop();
-    }
-
-    private void onClickReset(ActionEvent event)
-    {
-        System.out.println("Reset clicked");
-        m_mapPanel.getM_environment().resetEntities();
-        m_mapPanel.repaint();
-    }
-
-    private void onClickAddEntity(ActionEvent event)
-    {
-        m_frame.toggleEntitySpawnPanel();
-    }
-
-    private void onClickStats(ActionEvent event)
-    {
-       m_frame.toggleStatsPanel();
-    }
-
 }
