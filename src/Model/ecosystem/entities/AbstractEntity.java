@@ -100,6 +100,8 @@ public abstract class AbstractEntity
         return this.m_EntityType;
     }
 
+
+
     // ===================== ENUM =====================
     public enum EntityType
     {

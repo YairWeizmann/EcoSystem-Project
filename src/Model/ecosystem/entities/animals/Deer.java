@@ -1,6 +1,6 @@
 package Model.ecosystem.entities.animals;
-import Model.ecosystem.behaviors.EscapeMovement;
-import Model.ecosystem.behaviors.HerbivoreBehavior;
+import Model.ecosystem.behaviors.Animals.EscapeMovement;
+import Model.ecosystem.behaviors.Animals.HerbivoreBehavior;
 import Model.ecosystem.core.Position;
 import Model.ecosystem.interfaces.EdibleByHerbivore;
 

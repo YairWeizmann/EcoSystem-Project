@@ -1,4 +1,4 @@
-package Model.ecosystem.behaviors;
+package Model.ecosystem.behaviors.Animals;
 
 import Model.ecosystem.core.Environment;
 import Model.ecosystem.entities.animals.Animal;
