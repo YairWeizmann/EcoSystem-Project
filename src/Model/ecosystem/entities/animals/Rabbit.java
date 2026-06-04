@@ -4,21 +4,22 @@ import Model.ecosystem.behaviors.Animals.HerbivoreBehavior;
 import Model.ecosystem.behaviors.Animals.RandomMovement;
 import Model.ecosystem.core.Environment;
 import Model.ecosystem.core.Position;
+import Model.ecosystem.interfaces.EcosystemCommand;
 import Model.ecosystem.interfaces.EdibleByHerbivore;
 import Model.ecosystem.interfaces.Reproducible;
 
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 
 public class Rabbit extends Animal implements Reproducible , EdibleByHerbivore
 {
 
     // ============ Fields ============
     private double reproduceChance = 0.3;
-
-
     // ============ Constructors ============
-    public Rabbit(Position position) {
-        super(position, 'R', true,EntityType.Rabbit , 50, 50, 0, new HerbivoreBehavior(), new RandomMovement());
+    public Rabbit(Position position , BlockingQueue<EcosystemCommand> commandQueue)
+    {
+        super(position, 'R', true,commandQueue , EntityType.Rabbit, 50, 50, 0, new HerbivoreBehavior(), new RandomMovement());
     }
 
 
@@ -40,15 +41,21 @@ public class Rabbit extends Animal implements Reproducible , EdibleByHerbivore
             if (success)
             {
                 //Try To Get an empty position near the rabbit from the environment
-                Position freePos = env.getFreeNearbyPos(this.getM_position());
+
+                int distanceFromRabbit = 1;
+                Position freePos = env.getFreeNearbyPos(this.getM_position() , distanceFromRabbit);
                 if(freePos != null)
                 {
                     //Create a new baby rabbit -> new Rabbit(emptyPosition)
-                    Rabbit babyRabbit = new Rabbit(freePos);
+                    Rabbit babyRabbit = new Rabbit(freePos,getM_commandQueue());
+                    Thread newRabbitThread = new Thread(babyRabbit);
                     env.addEntity(babyRabbit);// Add the new baby rabbit to the environment -> env.addEntity(babyRabbit)
 
+                    newRabbitThread.start();
                     System.out.println("A new rabbit was born!");
+                    return;
                 }
+
                 System.out.println("no Near By Free Positions");
 
             }

@@ -2,6 +2,7 @@ package Model.ecosystem.entities.animals;
 
 import Model.ecosystem.behaviors.Animals.FeedingBehavior;
 import Model.ecosystem.behaviors.Animals.MovementStrategy;
+import Model.ecosystem.commands.ActCommand;
 import Model.ecosystem.core.Environment;
 import Model.ecosystem.core.Position;
 import Model.ecosystem.entities.AbstractEntity;
@@ -10,10 +11,11 @@ import Model.ecosystem.interfaces.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
 @SuppressWarnings("all")
 public abstract class Animal extends LivingEntity implements Movable , Eater ,
-  EdibleByCarnivore, Sensory , Consumable
+  EdibleByCarnivore, Sensory , Consumable , Runnable
 {
 
     // ===================== FIELDS =====================
@@ -21,16 +23,54 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
     private MovementStrategy m_animalMove;
     private int m_visionRange;
 
+    private BlockingQueue<EcosystemCommand> m_commandQueue;
+    private volatile boolean running = true;
+
 
     // ===================== Constructors =====================
-    public Animal(Position position, char symbol , boolean is_alive,EntityType entityType, double energy , double maxEnergy , double age ,
+    public Animal(Position position, char symbol , boolean is_alive,BlockingQueue<EcosystemCommand> commandQueue,EntityType entityType, double energy , double maxEnergy , double age ,
                   FeedingBehavior eatBehavior, MovementStrategy animalMove)
     {
         super(position,symbol , is_alive , entityType , energy , maxEnergy , age);
         this.m_eatBehavior = eatBehavior;
         this.m_animalMove = animalMove;
         this.m_visionRange = 2;
+        this.m_commandQueue = commandQueue;
     } //Animal Constructor
+
+    // ===================== Threads Related =====================
+    @Override
+    public void run()
+    {
+        while(running && getIs_alive())
+        {
+            try
+            {
+                m_commandQueue.put(new ActCommand(this));
+                Thread.sleep(1000);
+            }
+            catch (InterruptedException e)
+            {
+                running = false;
+            }
+
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        running = false;
+    }
+
+    public void startThread()
+    {
+        running = true;
+    }
+
+    public void stopThread()
+    {
+        running = false;
+    }
 
 
 
@@ -56,6 +96,10 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
         this.m_animalMove = m_animalMove;
     }
 
+    public BlockingQueue<EcosystemCommand> getM_commandQueue()
+    {
+        return this.m_commandQueue;
+    }
     //Interface Methods
     //Moveable
     @Override

@@ -41,7 +41,6 @@ public class Environment
         if(pos.getRow() < 0 || pos.getRow() >= rows ||
                 pos.getCol() < 0 || pos.getCol() >= cols)
         {
-            System.out.println("Position outside map bounds");
             return false;
         }
 
@@ -58,7 +57,7 @@ public class Environment
         return true;
     }
 
-    public boolean addEntity(AbstractEntity entity)
+    public synchronized boolean addEntity(AbstractEntity entity)
     {
         if(entity == null)
         {
@@ -88,15 +87,15 @@ public class Environment
         return true;
     }
 
-    public void removeDeadEntities()
+    public synchronized void removeDeadEntities()
     {
         m_Spawnedentities.removeIf(entity -> entity != null && !entity.getIs_alive());
     }
 
-    public void resetEntities()
-    {
-        this.m_Spawnedentities.clear();
-    }
+    public synchronized void resetEntities()
+        {
+            this.m_Spawnedentities.clear();
+        }
 
     // ============ MAP METHODS ============
 
@@ -163,9 +162,9 @@ public class Environment
         return nearByEntities;
     }
 
-    public Position getFreeNearbyPos(Position pos)
+    public Position getFreeNearbyPos(Position pos , int distance)
     {
-        List<Position> freePositions = getFreeNearbyPositions(pos);
+        List<Position> freePositions = getFreeNearbyPositions(pos , distance);
 
         if(freePositions.isEmpty())
             return null;
@@ -173,7 +172,7 @@ public class Environment
         return freePositions.get(0);
     }
 
-    public List<Position> getFreeNearbyPositions(Position pos)
+    public List<Position> getFreeNearbyPositions(Position pos , int distance)
     {
         List<Position> freePositions = new ArrayList<>();
 
@@ -183,10 +182,10 @@ public class Environment
         int currentRow = pos.getRow();
         int currentCol = pos.getCol();
 
-        Position posUp = new Position(currentRow - 1, currentCol);
-        Position posDown = new Position(currentRow + 1, currentCol);
-        Position posLeft = new Position(currentRow, currentCol - 1);
-        Position posRight = new Position(currentRow, currentCol + 1);
+        Position posUp = new Position(currentRow - distance, currentCol);
+        Position posDown = new Position(currentRow + distance, currentCol);
+        Position posLeft = new Position(currentRow, currentCol - distance);
+        Position posRight = new Position(currentRow, currentCol + distance);
 
         List<Position> positions = new ArrayList<>();
 
@@ -207,9 +206,9 @@ public class Environment
 
     // ============ GETTERS / SETTERS ============
 
-    public List<AbstractEntity> getM_entities()
+    public synchronized List<AbstractEntity> getM_entities()
     {
-        return m_Spawnedentities;
+        return new ArrayList<>(this.m_Spawnedentities);
     }
 
     public boolean setM_entities(List<AbstractEntity> entities)

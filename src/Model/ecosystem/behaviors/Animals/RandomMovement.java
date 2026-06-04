@@ -13,7 +13,8 @@ public class RandomMovement implements MovementStrategy
     @Override
     public boolean move(Animal animal, Environment env)
     {
-        List<Position> freePositions = env.getFreeNearbyPositions(animal.getM_position());
+        int tileMove = 1;
+        List<Position> freePositions = env.getFreeNearbyPositions(animal.getM_position(),tileMove);
 
         if (freePositions.isEmpty())
         {

@@ -1,26 +1,69 @@
 package Model.ecosystem.entities.plants;
+import Model.ecosystem.commands.ActCommand;
 import Model.ecosystem.core.Environment;
 import Model.ecosystem.core.Position;
 import Model.ecosystem.entities.LivingEntity;
 import Model.ecosystem.interfaces.Consumable;
+import Model.ecosystem.interfaces.EcosystemCommand;
 import Model.ecosystem.interfaces.EdibleByHerbivore;
 import Model.ecosystem.interfaces.Reproducible;
 
+import java.util.concurrent.BlockingQueue;
+
 @SuppressWarnings("all")
-public abstract class Plant extends LivingEntity implements Consumable , Reproducible, EdibleByHerbivore
+public abstract class Plant extends LivingEntity implements Consumable , Reproducible, EdibleByHerbivore , Runnable
 {
 
     // ===================== FIELDS =====================
     private double m_growthRate;
     private double m_reproductionChance;
+    private BlockingQueue<EcosystemCommand> m_commandQueue;
+    private volatile boolean running = true;
 
     // ===================== Constructors =====================
-    public Plant(Position position, char symbol , boolean is_alive,EntityType entityType , double energy , double max_energy , double age
+    public Plant(Position position, char symbol , boolean is_alive, BlockingQueue<EcosystemCommand> commandQueue, EntityType entityType , double energy , double max_energy , double age
             , double growthRate , double reproductionChance)
     {
       super(position,symbol,is_alive,entityType,energy,max_energy,age);
       setM_growthRate(growthRate);
       setM_reproductionChance(reproductionChance);
+
+      this.m_commandQueue = commandQueue;
+
+    }
+
+    // ===================== Thread Methods =====================
+    @Override
+    public void run()
+    {
+        while(running && getIs_alive())
+        {
+            try
+            {
+                m_commandQueue.put(new ActCommand(this));
+                Thread.sleep(1000);
+            }
+            catch (InterruptedException e)
+            {
+                running = false;
+                System.out.print("Stopped " + getM_entityType() + " Thread" + " ");
+            }
+
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        running = false;
+    }
+    public void startThread()
+    {
+        running = true;
+    }
+
+    public void stopThread()
+    {
+        running = false;
     }
 
     // ===================== InterFace Methods =====================
@@ -86,5 +129,10 @@ public abstract class Plant extends LivingEntity implements Consumable , Reprodu
 
         this.m_reproductionChance = m_reproductionChance;
         return true;
+    }
+
+    public BlockingQueue<EcosystemCommand> getM_commandQueue()
+    {
+        return this.m_commandQueue;
     }
 }

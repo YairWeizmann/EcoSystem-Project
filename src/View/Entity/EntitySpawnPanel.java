@@ -1,5 +1,6 @@
 package View.Entity;
 
+import Factories.EntityFactory;
 import Factories.TextFactory;
 import Model.ecosystem.core.Position;
 import Model.ecosystem.entities.AbstractEntity;
@@ -39,14 +40,14 @@ public class EntitySpawnPanel extends JPanel
 
     // Reference to the map panel, so we can add the new entity to the map
     private MapPanel m_mapPanel;
-
-
+    private EntityFactory m_entityFactory;
     // ===================== CONSTRUCTORS =====================
 
-    public EntitySpawnPanel(MapPanel mapPanel)
+    public EntitySpawnPanel(MapPanel mapPanel,EntityFactory entityFactory)
     {
         // Save the map panel because the spawned entity needs to be sent there
         this.m_mapPanel = mapPanel;
+        this.m_entityFactory = entityFactory;
 
         // Basic size and layout for the spawn panel
         setPreferredSize(new Dimension(400, 100));
@@ -127,49 +128,20 @@ public class EntitySpawnPanel extends JPanel
             Position spawnedEntityPos = new Position(posY, posX); // row, col
 
             // Create the correct entity object according to the selected type
-            AbstractEntity spawnedEntity = createEntity(entityType, spawnedEntityPos, energy);
+            AbstractEntity spawnedEntity = m_entityFactory.createEntity(entityType,spawnedEntityPos,energy);
+            Thread newThread = new Thread((Runnable) spawnedEntity);
 
             // If the entity was created successfully, add it to the map
             if(spawnedEntity != null)
             {
                 m_mapPanel.spawnEntity(spawnedEntity);
             }
+            newThread.start();
         }
         catch(NumberFormatException ex)
         {
             // Happens if the user entered text instead of numbers
             JOptionPane.showMessageDialog(this, "Enter valid numbers");
-        }
-    }
-
-    private AbstractEntity createEntity(AbstractEntity.EntityType entityType, Position position, int energy)
-    {
-        // Create the correct subclass based on the selected entity type
-        switch(entityType)
-        {
-            case Deer:
-                return new Deer(position);
-
-            case Rabbit:
-                return new Rabbit(position);
-
-            case Lion:
-                return new Lion(position);
-
-            case OakTree:
-                return new OakTree(position);
-
-            case Flower:
-                return new Flower(position);
-
-            case Water:
-                return new Water(position);
-
-            case Rock:
-                return new Rock(position);
-
-            default:
-                return null;
         }
     }
 

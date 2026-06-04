@@ -2,6 +2,9 @@ package Model.ecosystem.entities;
 import Model.ecosystem.core.Environment;
 import Model.ecosystem.core.Position;
 import Model.ecosystem.interfaces.Actable;
+import Model.ecosystem.interfaces.EcosystemCommand;
+
+import java.util.concurrent.BlockingQueue;
 
 @SuppressWarnings("all")
 
@@ -11,10 +14,12 @@ public class LivingEntity extends AbstractEntity implements Actable
     private double m_energy;
     private double m_maxEnergy;
     private double m_age = 0f;
+    private volatile boolean running = true;
+
 
     // ===================== Constructors =====================
 
-    public LivingEntity(Position position,char symbol , boolean is_alive ,EntityType entityType , double energy , double max_energy , double age)
+    public LivingEntity(Position position,char symbol , boolean is_alive ,EntityType entityType, double energy , double max_energy , double age)
     {
         super(position,symbol,is_alive,entityType);
         this.m_energy = energy;

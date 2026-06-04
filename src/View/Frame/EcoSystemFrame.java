@@ -2,6 +2,7 @@ package View.Frame;
 
 import Controller.Buttons.ButtonsController;
 import Controller.Map.MapController;
+import Factories.EntityFactory;
 import Model.ecosystem.core.Environment;
 import Model.ecosystem.core.SimulationEngine;
 import View.Buttons.ButtonsPanel;
@@ -145,7 +146,8 @@ public class EcoSystemFrame extends JFrame
     private void createEntitySpawnPanel()
     {
         // Create the panel that allows the user to add new entities
-        m_entitySpawnPanel = new EntitySpawnPanel(m_MainMapPanel);
+        EntityFactory newEntityFactory = new EntityFactory(this.m_simulationEngine.getCommandQueue());
+        m_entitySpawnPanel = new EntitySpawnPanel(m_MainMapPanel,newEntityFactory);
 
         // Set its size and hide it at the start
         m_entitySpawnPanel.setPreferredSize(new Dimension(850, 70));

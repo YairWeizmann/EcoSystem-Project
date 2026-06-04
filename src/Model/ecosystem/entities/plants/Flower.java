@@ -2,8 +2,11 @@ package Model.ecosystem.entities.plants;
 
 import Model.ecosystem.core.Environment;
 import Model.ecosystem.core.Position;
+import Model.ecosystem.interfaces.EcosystemCommand;
 
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Flow;
 
 @SuppressWarnings("all")
 
@@ -19,14 +22,14 @@ public class Flower extends Plant
     private final static double reproductionChance = 0.2f;
 
     // ===================== Constructors =====================
-    public Flower(Position position, char symbol, boolean is_alive, double energy, double max_energy, double age,
+    public Flower(Position position, char symbol, boolean is_alive, BlockingQueue<EcosystemCommand> commandQueue, double energy, double max_energy, double age,
                   double growthRate, double reproductionChance)
     {
-        super(position, symbol, is_alive,EntityType.Flower ,energy, max_energy = 70, age, growthRate = 5, reproductionChance = 0.2f);
+        super(position, symbol, is_alive,commandQueue,EntityType.Flower ,energy, max_energy = 70, age, growthRate = 5, reproductionChance = 0.2f);
     }
-    public Flower(Position position)
+    public Flower(Position position,BlockingQueue<EcosystemCommand> commandQueue)
     {
-        super(position, symbol, is_alive,EntityType.Flower ,energy, max_energy, age, growthRate, reproductionChance);
+        super(position, symbol, is_alive,commandQueue,EntityType.Flower ,energy, max_energy, age, growthRate, reproductionChance);
     }
 
     // ===================== Interfaces Methods =====================
@@ -41,5 +44,25 @@ public class Flower extends Plant
             return true;
 
         return false;
+    }
+
+    @Override
+    public void act(Environment env)
+    {
+        super.act(env);
+
+        boolean sucessReproduction = reproduce(env);
+
+        if(sucessReproduction)
+        {
+            int distanceFromFlower = 2;
+            Position newPos = env.getFreeNearbyPos(this.getM_position(),distanceFromFlower);
+            if(newPos == null)
+                return;
+
+            Flower newFlower = new Flower(newPos,getM_commandQueue());
+            env.addEntity(newFlower);
+
+        }
     }
 }

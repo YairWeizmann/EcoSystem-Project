@@ -38,20 +38,6 @@ public class ButtonsController
         this.m_environment = environment;
         this.m_mapPanel = mapPanel;
 
-        // Create the timer that will be used by the Run button
-        initTimer();
-    }
-
-
-    // ===================== INIT METHODS =====================
-
-    private void initTimer()
-    {
-        // Runs one simulation tick every 500 milliseconds while the timer is active
-        m_runTimer = new Timer(500, e -> {
-            m_simulationEngine.tick(); // Advance the simulation by one step
-            m_mapPanel.repaint(); // Redraw the map after the entities changed
-        });
     }
 
 
@@ -69,21 +55,22 @@ public class ButtonsController
     public void onRunClicked()
     {
         // Start automatic ticking only if the timer is not already running
-        if(!m_runTimer.isRunning())
-            m_runTimer.start();
+       m_simulationEngine.startSimulation();
     }
 
     public void onStopClicked()
     {
         // Stop the automatic simulation run
-        if(m_runTimer.isRunning())
-            m_runTimer.stop();
+        m_simulationEngine.stopSimulation();
     }
 
     public void onResetClicked()
     {
-        // Stop the run timer before resetting the simulation
-        m_runTimer.stop();
+        //Stops all Entities Threads
+        m_simulationEngine.stopSimulation();
+
+        //Clears the BlockingQueue Commands
+        m_simulationEngine.clearCommands();
 
         // Clear all entities from the environment
         m_environment.resetEntities();
