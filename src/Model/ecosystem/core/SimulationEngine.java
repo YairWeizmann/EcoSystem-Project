@@ -32,13 +32,17 @@ public class SimulationEngine implements Runnable
 
 
     // ============ Constructors ============
+
+    // Creates the simulation engine and initializes all needed components
     public SimulationEngine(Environment environment)
     {
-       InitComponents(environment);
+        InitComponents(environment);
     }
 
     // ============ Methods ============
-    public void tick()
+
+    // Makes all actable entities act once manually, without starting threads
+    public void tick() //
     {
 
         List<AbstractEntity> copyEntities =
@@ -62,8 +66,7 @@ public class SimulationEngine implements Runnable
     // ============ Threaded Methods ============
 
 
-
-
+    // Starts the simulation engine thread and starts a thread for each runnable entity
     public void startSimulation()
     {
         running = true;
@@ -100,6 +103,7 @@ public class SimulationEngine implements Runnable
 
     }
 
+    // Stops the simulation engine and interrupts all entity threads
     public void stopSimulation()
     {
         running = false;
@@ -125,6 +129,7 @@ public class SimulationEngine implements Runnable
         m_entityThreads.clear();
     }
 
+    // Updates the environment after a command was executed
     private void afterCommandExecuted()
     {
         this.m_environment.removeDeadEntities();
@@ -132,6 +137,7 @@ public class SimulationEngine implements Runnable
         notifyStatsChanged();
     }
 
+    // Main loop of the SimulationEngine thread, takes commands from the queue and executes them
     @Override
     public void run()
     {
@@ -159,6 +165,8 @@ public class SimulationEngine implements Runnable
     }
 
     // ============ Helper Methods ============
+
+    // Initializes the main fields of the simulation engine
     private void InitComponents(Environment environment)
     {
         this.m_environment = environment;
@@ -169,12 +177,15 @@ public class SimulationEngine implements Runnable
     }
 
     // ============ Observer Methods ============
+
+    // Adds a listener that will be notified when stats change
     public void addStatsListener(StatsListener listener)
     {
         if(listener != null)
             m_statsListeners.add(listener);
     }
 
+    // Notifies all stats listeners that the stats changed
     private void notifyStatsChanged()
     {
         for(StatsListener listener : m_statsListeners)
@@ -185,11 +196,13 @@ public class SimulationEngine implements Runnable
 
     // ============ Getters / Setters ============
 
+    // Returns the current simulation statistics object
     public SimulationStats getSimulationStats()
     {
         return this.m_simulationStats;
     }
 
+    // Replaces the current command queue with a new one
     public boolean setCommandQueue(BlockingQueue<EcosystemCommand> newCommandQueue)
     {
         if(newCommandQueue == null)
@@ -199,12 +212,14 @@ public class SimulationEngine implements Runnable
         return true;
     }
 
+    // Returns the command queue used by the simulation
     public BlockingQueue<EcosystemCommand> getCommandQueue()
     {
         return this.m_commandQueue;
     }
 
 
+    // Clears all waiting commands from the queue
     public void clearCommands()
     {
         this.m_commandQueue.clear();

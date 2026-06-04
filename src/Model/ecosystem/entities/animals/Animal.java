@@ -15,7 +15,7 @@ import java.util.concurrent.BlockingQueue;
 
 @SuppressWarnings("all")
 public abstract class Animal extends LivingEntity implements Movable , Eater ,
-  EdibleByCarnivore, Sensory , Consumable , Runnable
+        EdibleByCarnivore, Sensory , Consumable , Runnable
 {
 
     // ===================== FIELDS =====================
@@ -28,6 +28,8 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
 
 
     // ===================== Constructors =====================
+
+    // Creates an animal with position, stats, behaviors and command queue
     public Animal(Position position, char symbol , boolean is_alive,BlockingQueue<EcosystemCommand> commandQueue,EntityType entityType, double energy , double maxEnergy , double age ,
                   FeedingBehavior eatBehavior, MovementStrategy animalMove)
     {
@@ -39,6 +41,8 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
     } //Animal Constructor
 
     // ===================== Threads Related =====================
+
+    // Runs the animal thread and sends act commands every second
     @Override
     public void run()
     {
@@ -62,11 +66,13 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
         running = false;
     }
 
+    // Allows the animal thread loop to run
     public void startThread()
     {
         running = true;
     }
 
+    // Stops the animal thread loop
     public void stopThread()
     {
         running = false;
@@ -77,31 +83,39 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
     // ===================== getters & setters =====================
 
 
+    // Returns the eating behavior of the animal
     public FeedingBehavior getM_eatBehavior()
     {
         return m_eatBehavior;
     }
 
+    // Sets the eating behavior of the animal
     public void setM_eatBehavior(FeedingBehavior m_eatBehavior)
     {
         this.m_eatBehavior = m_eatBehavior;
     }
 
+    // Returns the movement strategy of the animal
     public MovementStrategy getM_animalMove()
     {
         return m_animalMove;
     }
 
+    // Sets the movement strategy of the animal
     public void setM_animalMove(MovementStrategy m_animalMove) {
         this.m_animalMove = m_animalMove;
     }
 
+    // Returns the command queue used by this animal
     public BlockingQueue<EcosystemCommand> getM_commandQueue()
     {
         return this.m_commandQueue;
     }
+
     //Interface Methods
     //Moveable
+
+    // Moves the animal using its movement strategy
     @Override
     public boolean move(Environment env) //Move
     {
@@ -115,11 +129,13 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
     }
 
     //Eater
+
+    // Eats a consumable target and adds energy to the animal
     @Override
     public boolean eat(Consumable target) //eat a Consumable
     {
-      if(this.m_eatBehavior == null)
-          return false;
+        if(this.m_eatBehavior == null)
+            return false;
 
         double newEnergy = this.getM_energy() + target.getNutritionValue();
 
@@ -133,6 +149,8 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
     }
 
     //Sensory
+
+    // Gets nearby entities around this animal
     @Override
     public List<AbstractEntity> sense(Environment env) // get all Entities in Distance // Later
     {
@@ -143,12 +161,15 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
     }
 
     //Consumable
+
+    // Returns how much energy this animal gives when eaten
     @Override
     public double getNutritionValue()
     {
-      return 0.8f * this.getM_energy();
+        return 0.8f * this.getM_energy();
     }
 
+    // Marks the animal as dead when it gets consumed
     @Override
     public void onConsumed()
     {
@@ -156,6 +177,8 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
     }
 
     //Actable (Father)
+
+    // Makes the animal lose energy, try to eat, and move if it did not eat
     @Override
     public void act(Environment env )
     {
@@ -173,7 +196,7 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
             ate = m_eatBehavior.eat(this, nearby);
         }
         if (!ate)  //Nothing edible around than move
-           move(env);
+            move(env);
 
     }
 }
