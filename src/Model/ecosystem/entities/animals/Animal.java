@@ -8,6 +8,8 @@ import Model.ecosystem.core.Position;
 import Model.ecosystem.entities.AbstractEntity;
 import Model.ecosystem.entities.LivingEntity;
 import Model.ecosystem.interfaces.*;
+import Model.ecosystem.states.EntityState;
+import Model.ecosystem.states.IdleState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,9 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
     private BlockingQueue<EcosystemCommand> m_commandQueue;
     private volatile boolean running = true;
 
+    private EntityState m_currentState;
+
+    private Environment m_currentEnv;
 
     // ===================== Constructors =====================
 
@@ -38,6 +43,7 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
         this.m_animalMove = animalMove;
         this.m_visionRange = 2;
         this.m_commandQueue = commandQueue;
+        this.m_currentState = new IdleState();
     } //Animal Constructor
 
     // ===================== Threads Related =====================
@@ -78,6 +84,19 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
         running = false;
     }
 
+    // ===================== Helper Methods =====================
+
+    public boolean isInCorner(Environment env)
+    {
+        int row = getM_position().getRow();
+        int col = getM_position().getCol();
+
+        int maxRow = env.getRows() - 1;
+        int maxCol = env.getCols() - 1;
+
+        return (row == 0 && col == 0) || (row == 0 && col == maxCol) || (row == maxRow && col == 0) || (row == maxRow && col == maxCol);
+    }
+
 
 
     // ===================== getters & setters =====================
@@ -112,6 +131,28 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
         return this.m_commandQueue;
     }
 
+
+    //Sets new state for the current state
+    public boolean setM_currentState(EntityState newState)
+    {
+        this.m_currentState = newState;
+        return true;
+    }
+
+    //Returns the Current State
+    public EntityState getM_currentState()
+    {
+        return this.m_currentState;
+    }
+
+
+    public Environment getM_currentEnv()
+    {
+        if(this.m_currentEnv == null)
+            return null;
+
+        return this.m_currentEnv;
+    }
     //Interface Methods
     //Moveable
 
@@ -182,21 +223,16 @@ public abstract class Animal extends LivingEntity implements Movable , Eater ,
     @Override
     public void act(Environment env )
     {
-        super.act(env); //Father Acts (Removing Energy By 2 , age +1 , checks if Energy Below Zero)
-
-        // check if is alive:
         if (!getIs_alive())
             return;
 
-        List<AbstractEntity> nearby = sense(env);
+        this.m_currentEnv = env;
 
-        boolean ate = false;
-        if (m_eatBehavior != null && nearby != null && !nearby.isEmpty())
-        {
-            ate = m_eatBehavior.eat(this, nearby);
-        }
-        if (!ate)  //Nothing edible around than move
-            move(env);
+        setM_age(getM_age() + 1);
 
+        m_currentState.doAction(this);
+
+        if (getM_energy() <= 0)
+            setIs_alive(false);
     }
 }

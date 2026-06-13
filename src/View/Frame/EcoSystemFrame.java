@@ -173,7 +173,7 @@ public class EcoSystemFrame extends JFrame
     private void createInfoPanel()
     {
         // Create the panel that shows information about the selected entity
-        m_InfoPanel = new InfoPanel();
+        m_InfoPanel = new InfoPanel(m_environment);
 
         // Place the info panel on the right side of the frame
         add(m_InfoPanel,BorderLayout.EAST);

@@ -16,6 +16,7 @@ public class ActCommand implements EcosystemCommand
     @Override
     public void execute(Environment env)
     {
-        m_actable.act(env);
+        Actable activeActable = env.resolveActable(m_actable);
+        activeActable.act(env);
     }
 }

@@ -1,6 +1,8 @@
 package Model.ecosystem.core;
 
+import Model.ecosystem.decorators.EntityDecorator;
 import Model.ecosystem.entities.AbstractEntity;
+import Model.ecosystem.interfaces.Actable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -202,8 +204,30 @@ public class Environment
 
         return freePositions;
     }
+    public void replaceEntity(AbstractEntity oldEntity, AbstractEntity newEntity)
+    {
+        int index = m_Spawnedentities.indexOf(oldEntity);
 
+        if (index != -1)
+        {
+            newEntity.setM_position(oldEntity.getM_position());
+            m_Spawnedentities.set(index, newEntity);
+        }
+    }
 
+    public Actable resolveActable(Actable requested)
+    {
+        for (AbstractEntity entity : m_Spawnedentities)
+        {
+            if (entity instanceof Actable actable && actable == requested)
+                return actable;
+
+            if (entity instanceof EntityDecorator decorator && decorator.wraps(requested))
+                return decorator;
+        }
+
+        return requested;
+    }
     // ============ GETTERS / SETTERS ============
 
     public synchronized List<AbstractEntity> getM_entities()

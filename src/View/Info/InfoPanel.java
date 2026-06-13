@@ -1,9 +1,13 @@
 package View.Info;
 
 import Factories.TextFactory;
+import Model.ecosystem.core.Environment;
+import Model.ecosystem.decorators.PoisonedDecorator;
+import Model.ecosystem.decorators.SpeedDecorator;
 import Model.ecosystem.entities.AbstractEntity;
 import Model.ecosystem.entities.LivingEntity;
 import Model.ecosystem.entities.StaticEntity;
+import Model.ecosystem.interfaces.Actable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,11 +22,19 @@ public class InfoPanel extends JPanel
     private JLabel m_age;
     private JLabel m_isalive;
 
+    private JButton m_poisonButton;
+    private JButton m_speedButton;
+
+    private AbstractEntity m_selectedEntity;
+    private Environment m_environment;
+
 
     // ===================== Constructors =====================
 
-    public InfoPanel()
+    public InfoPanel(Environment environment)
     {
+        this.m_environment = environment;
+
         // Create and set up all the labels and panel settings
         InitComponents();
     }
@@ -38,17 +50,28 @@ public class InfoPanel extends JPanel
         m_age = TextFactory.createStylizedLabel("Age: ",Color.white,Font.BOLD,16);
         m_isalive = TextFactory.createStylizedLabel("Is Alive:  ",Color.white,Font.BOLD,16);
 
+        m_poisonButton = new JButton("Apply Poison");
+        m_speedButton = new JButton("Apply Speed");
+
+        m_poisonButton.setEnabled(false);
+        m_speedButton.setEnabled(false);
+
+        m_poisonButton.addActionListener(e -> applyPoison());
+        m_speedButton.addActionListener(e -> applySpeed());
+
         // Add the labels to the panel
         add(m_name);
         add(m_energy);
         add(m_age);
         add(m_isalive);
+        add(m_poisonButton);
+        add(m_speedButton);
 
         // Set the size of the info panel
-        setPreferredSize(new Dimension(150, 100));
+        setPreferredSize(new Dimension(150, 160));
 
         // Show each label in a separate row
-        setLayout(new GridLayout(4, 1)); // 4 rows, 1 column
+        setLayout(new GridLayout(6, 1)); // 6 rows, 1 column
 
         // Give the panel a dark transparent background
         setBackground(new Color(0, 0, 0, 100));
@@ -59,14 +82,54 @@ public class InfoPanel extends JPanel
     }
 
 
+    private void applyPoison()
+    {
+        if (!(m_selectedEntity instanceof Actable))
+            return;
+
+        PoisonedDecorator poisoned = new PoisonedDecorator((Actable) m_selectedEntity);
+
+        m_environment.replaceEntity(m_selectedEntity, poisoned);
+
+        m_selectedEntity = poisoned;
+
+        System.out.println("Poison act called");
+    }
+
+
+    private void applySpeed()
+    {
+        if (!(m_selectedEntity instanceof Actable))
+            return;
+
+        SpeedDecorator speedBoost = new SpeedDecorator((Actable) m_selectedEntity);
+
+        m_environment.replaceEntity(m_selectedEntity, speedBoost);
+
+        m_selectedEntity = speedBoost;
+
+        System.out.println("Speed Been applied to " + m_selectedEntity.getClass().getSimpleName());
+    }
+
+
     public void showInfo(AbstractEntity entity)
     {
+        m_selectedEntity = entity;
+
         // If no entity was found on the selected tile, hide the panel
         if(entity == null)
         {
+            m_poisonButton.setEnabled(false);
+            m_speedButton.setEnabled(false);
+
             setVisible(false);
             return;
         }
+
+        boolean canDecorate = entity instanceof Actable;
+
+        m_poisonButton.setEnabled(canDecorate);
+        m_speedButton.setEnabled(canDecorate);
 
         if((entity instanceof LivingEntity))
         {
