@@ -20,6 +20,7 @@ public class NetworkManager
     private ServerSocket m_serverSocket;
     private Thread m_serverThread;
     private volatile boolean m_running;
+    private NetworkMessageParser m_parser;
 
     /**
      * Creates a network manager that listens on the default port.
@@ -37,6 +38,7 @@ public class NetworkManager
     public NetworkManager(int port)
     {
         this.m_port = port;
+        this.m_parser = new NetworkMessageParser();
     }
 
     /**
@@ -112,6 +114,13 @@ public class NetworkManager
             if (message != null)
             {
                 System.out.println("Received network message: " + message);
+
+                NetworkCommand command = m_parser.parse(message);
+
+                if (command != null)
+                {
+                    command.printCommandInfo();
+                }
             }
             else
             {
