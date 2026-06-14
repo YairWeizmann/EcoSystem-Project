@@ -5,6 +5,7 @@ import Controller.Map.MapController;
 import Factories.EntityFactory;
 import Model.ecosystem.core.Environment;
 import Model.ecosystem.core.SimulationEngine;
+import Model.ecosystem.network.NetworkManager;
 import View.Buttons.ButtonsPanel;
 import View.Entity.EntitySpawnPanel;
 import View.Info.InfoPanel;
@@ -21,6 +22,7 @@ public class EcoSystemFrame extends JFrame
     // Core objects of the simulation
     private Environment m_environment;
     private SimulationEngine m_simulationEngine;
+    private NetworkManager m_networkManager;
 
     // Main panels used in the window
     private MapPanel m_MainMapPanel;
@@ -78,6 +80,9 @@ public class EcoSystemFrame extends JFrame
 
         // SimulationEngine runs the simulation logic using the same environment
         m_simulationEngine = new SimulationEngine(m_environment);
+
+        // NetworkManager receives portal messages and adds entities to the same environment
+        m_networkManager = new NetworkManager(m_environment, m_simulationEngine.getCommandQueue());
     }
 
 
@@ -187,6 +192,15 @@ public class EcoSystemFrame extends JFrame
         createButtonsPanel();
         createEntitySpawnPanel();
         createStatsPanel();
+        startNetworkServer();
+    }
+
+    private void startNetworkServer()
+    {
+        m_networkManager.setOnCommandExecuted(() ->
+                SwingUtilities.invokeLater(() -> m_MainMapPanel.repaint()));
+
+        m_networkManager.startServer();
     }
 
 

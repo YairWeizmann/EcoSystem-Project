@@ -2,6 +2,7 @@ package Factories;
 
 import Model.ecosystem.core.Position;
 import Model.ecosystem.entities.AbstractEntity;
+import Model.ecosystem.entities.LivingEntity;
 import Model.ecosystem.entities.animals.Deer;
 import Model.ecosystem.entities.animals.Lion;
 import Model.ecosystem.entities.animals.Rabbit;
@@ -24,31 +25,47 @@ public class EntityFactory
 
     public AbstractEntity createEntity(AbstractEntity.EntityType entityType, Position position, int energy)
     {
+        AbstractEntity entity;
+
         switch(entityType)
         {
             case Deer:
-                return new Deer(position, m_commandQueue);
+                entity = new Deer(position, m_commandQueue);
+                break;
 
             case Rabbit:
-                return new Rabbit(position, m_commandQueue);
+                entity = new Rabbit(position, m_commandQueue);
+                break;
 
             case Lion:
-                return new Lion(position, m_commandQueue);
+                entity = new Lion(position, m_commandQueue);
+                break;
 
             case OakTree:
-                return new OakTree(position,m_commandQueue);
+                entity = new OakTree(position,m_commandQueue);
+                break;
 
             case Flower:
-                return new Flower(position,m_commandQueue);
+                entity = new Flower(position,m_commandQueue);
+                break;
 
             case Water:
-                return new Water(position);
+                entity = new Water(position);
+                break;
 
             case Rock:
-                return new Rock(position);
+                entity = new Rock(position);
+                break;
 
             default:
                 return null;
         }
+
+        if(entity instanceof LivingEntity && energy >= 0)
+        {
+            ((LivingEntity) entity).setM_energy(energy);
+        }
+
+        return entity;
     }
 }

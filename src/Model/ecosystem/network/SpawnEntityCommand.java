@@ -1,6 +1,11 @@
 package Model.ecosystem.network;
 
+import Factories.EntityFactory;
+import Model.ecosystem.core.Environment;
+import Model.ecosystem.core.Position;
 import Model.ecosystem.entities.AbstractEntity;
+import Model.ecosystem.entities.animals.Animal;
+import Model.ecosystem.entities.plants.Plant;
 
 /**
  * Command that stores the data needed to spawn an entity received from the network.
@@ -20,12 +25,68 @@ public class SpawnEntityCommand implements NetworkCommand
         this.m_y = y;
     }
 
+    /**
+     * Creates the entity, adds it to the environment, and starts its thread if needed.
+     */
+    @Override
+    public boolean execute(Environment environment, EntityFactory entityFactory)
+    {
+        if (environment == null || entityFactory == null)
+        {
+            System.out.println("Cannot execute spawn command: missing environment or entity factory.");
+            return false;
+        }
+
+        Position position = new Position(m_y, m_x); // protocol uses X,Y. Position uses row,col.
+        AbstractEntity newEntity = entityFactory.createEntity(m_entityType, position, m_energy);
+
+        if (newEntity == null)
+        {
+            System.out.println("Could not create received entity: " + m_entityType);
+            return false;
+        }
+
+        boolean added = environment.addEntity(newEntity);
+
+        if (!added)
+        {
+            System.out.println("Received entity was not added to the environment.");
+            return false;
+        }
+
+        startEntityThread(newEntity);
+        System.out.println("Received entity added to environment: " + m_entityType);
+        return true;
+    }
+
     @Override
     public void printCommandInfo()
     {
         System.out.println("Parsed network command: SPAWN " +
                 m_entityType + " energy=" + m_energy +
                 " x=" + m_x + " y=" + m_y);
+    }
+
+    /**
+     * Starts the entity thread only for entities that support Runnable.
+     */
+    private void startEntityThread(AbstractEntity entity)
+    {
+        if (!(entity instanceof Runnable))
+            return;
+
+        if (entity instanceof Animal)
+        {
+            ((Animal) entity).startThread();
+        }
+        else if (entity instanceof Plant)
+        {
+            ((Plant) entity).startThread();
+        }
+
+        Thread entityThread = new Thread((Runnable) entity);
+        entityThread.setName("Received-" + entity.getM_entityType() + "-Thread");
+        entityThread.start();
     }
 
     public AbstractEntity.EntityType getM_entityType()

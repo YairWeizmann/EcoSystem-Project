@@ -1,5 +1,9 @@
 package Model.ecosystem.network;
 
+import Factories.EntityFactory;
+import Model.ecosystem.core.Environment;
+import Model.ecosystem.interfaces.EcosystemCommand;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,6 +11,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Handles basic network communication for the portal feature.
@@ -21,6 +26,9 @@ public class NetworkManager
     private Thread m_serverThread;
     private volatile boolean m_running;
     private NetworkMessageParser m_parser;
+    private Environment m_environment;
+    private EntityFactory m_entityFactory;
+    private Runnable m_onCommandExecuted;
 
     /**
      * Creates a network manager that listens on the default port.
@@ -37,8 +45,33 @@ public class NetworkManager
      */
     public NetworkManager(int port)
     {
+        this(port, null, null);
+    }
+
+    /**
+     * Creates a network manager that can execute received commands on the environment.
+     *
+     * @param environment local environment that receives spawned entities
+     * @param commandQueue command queue used by created living entities
+     */
+    public NetworkManager(Environment environment, BlockingQueue<EcosystemCommand> commandQueue)
+    {
+        this(DEFAULT_PORT, environment, commandQueue);
+    }
+
+    /**
+     * Creates a network manager with a custom port and model dependencies.
+     */
+    public NetworkManager(int port, Environment environment, BlockingQueue<EcosystemCommand> commandQueue)
+    {
         this.m_port = port;
         this.m_parser = new NetworkMessageParser();
+        this.m_environment = environment;
+
+        if (commandQueue != null)
+        {
+            this.m_entityFactory = new EntityFactory(commandQueue);
+        }
     }
 
     /**
@@ -120,6 +153,20 @@ public class NetworkManager
                 if (command != null)
                 {
                     command.printCommandInfo();
+
+                    if (m_environment != null && m_entityFactory != null)
+                    {
+                        boolean executed = command.execute(m_environment, m_entityFactory);
+
+                        if (executed)
+                        {
+                            notifyCommandExecuted();
+                        }
+                    }
+                    else
+                    {
+                        System.out.println("Network command parsed only. No environment connected.");
+                    }
                 }
             }
             else
@@ -213,6 +260,25 @@ public class NetworkManager
         {
             System.out.println("Error while closing network server socket.");
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Sets a callback that runs after a received network command was executed.
+     */
+    public void setOnCommandExecuted(Runnable onCommandExecuted)
+    {
+        this.m_onCommandExecuted = onCommandExecuted;
+    }
+
+    /**
+     * Notifies the application that the model changed because of a network command.
+     */
+    private void notifyCommandExecuted()
+    {
+        if (m_onCommandExecuted != null)
+        {
+            m_onCommandExecuted.run();
         }
     }
 
