@@ -29,13 +29,13 @@ public class Environment
     public Environment(List<AbstractEntity> entities)
     {
         if(entities != null)
-            this.m_Spawnedentities = entities;
+            this.m_Spawnedentities = new ArrayList<>(entities);
     }
 
 
     // ============ POSITION / ENTITY METHODS ============
 
-    public boolean isPositionFree(Position pos)
+    public synchronized boolean isPositionFree(Position pos)
     {
         if(pos == null)
             return false;
@@ -77,7 +77,7 @@ public class Environment
         return true;
     }
 
-    public boolean removeEntity(AbstractEntity entity)
+    public synchronized boolean removeEntity(AbstractEntity entity)
     {
         if(entity == null)
             return false;
@@ -101,7 +101,7 @@ public class Environment
 
     // ============ MAP METHODS ============
 
-    public void printMap()
+    public synchronized void printMap()
     {
         char[][] map = new char[rows][cols];
 
@@ -141,7 +141,7 @@ public class Environment
 
     // ============ NEARBY METHODS ============
 
-    public List<AbstractEntity> getNearByEntities(Position pos)
+    public synchronized List<AbstractEntity> getNearByEntities(Position pos)
     {
         List<AbstractEntity> nearByEntities = new ArrayList<>();
 
@@ -164,7 +164,7 @@ public class Environment
         return nearByEntities;
     }
 
-    public Position getFreeNearbyPos(Position pos , int distance)
+    public synchronized Position getFreeNearbyPos(Position pos , int distance)
     {
         List<Position> freePositions = getFreeNearbyPositions(pos , distance);
 
@@ -174,7 +174,7 @@ public class Environment
         return freePositions.get(0);
     }
 
-    public List<Position> getFreeNearbyPositions(Position pos , int distance)
+    public synchronized List<Position> getFreeNearbyPositions(Position pos , int distance)
     {
         List<Position> freePositions = new ArrayList<>();
 
@@ -204,7 +204,7 @@ public class Environment
 
         return freePositions;
     }
-    public void replaceEntity(AbstractEntity oldEntity, AbstractEntity newEntity)
+    public synchronized void replaceEntity(AbstractEntity oldEntity, AbstractEntity newEntity)
     {
         int index = m_Spawnedentities.indexOf(oldEntity);
 
@@ -215,7 +215,7 @@ public class Environment
         }
     }
 
-    public Actable resolveActable(Actable requested)
+    public synchronized Actable resolveActable(Actable requested)
     {
         for (AbstractEntity entity : m_Spawnedentities)
         {
@@ -232,15 +232,16 @@ public class Environment
 
     public synchronized List<AbstractEntity> getM_entities()
     {
+        // Copy the list so other threads won't change it while we loop over it.
         return new ArrayList<>(this.m_Spawnedentities);
     }
 
-    public boolean setM_entities(List<AbstractEntity> entities)
+    public synchronized boolean setM_entities(List<AbstractEntity> entities)
     {
         if(entities == null)
             return false;
 
-        this.m_Spawnedentities = entities;
+        this.m_Spawnedentities = new ArrayList<>(entities);
         return true;
     }
 
@@ -254,7 +255,7 @@ public class Environment
         return cols;
     }
 
-    public AbstractEntity getEntityAt(int row , int col)
+    public synchronized AbstractEntity getEntityAt(int row , int col)
     {
         for (AbstractEntity entity : m_Spawnedentities)
         {

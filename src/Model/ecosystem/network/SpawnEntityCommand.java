@@ -7,9 +7,6 @@ import Model.ecosystem.entities.AbstractEntity;
 import Model.ecosystem.entities.animals.Animal;
 import Model.ecosystem.entities.plants.Plant;
 
-/**
- * Command that stores the data needed to spawn an entity received from the network.
- */
 public class SpawnEntityCommand implements NetworkCommand
 {
     private AbstractEntity.EntityType m_entityType;
@@ -25,9 +22,6 @@ public class SpawnEntityCommand implements NetworkCommand
         this.m_y = y;
     }
 
-    /**
-     * Creates the entity, adds it to the environment, and starts its thread if needed.
-     */
     @Override
     public boolean execute(Environment environment, EntityFactory entityFactory)
     {
@@ -37,7 +31,8 @@ public class SpawnEntityCommand implements NetworkCommand
             return false;
         }
 
-        Position position = new Position(m_y, m_x); // protocol uses X,Y. Position uses row,col.
+        // Protocol uses X,Y. Position uses row,col.
+        Position position = new Position(m_y, m_x);
         AbstractEntity newEntity = entityFactory.createEntity(m_entityType, position, m_energy);
 
         if (newEntity == null)
@@ -67,9 +62,6 @@ public class SpawnEntityCommand implements NetworkCommand
                 " x=" + m_x + " y=" + m_y);
     }
 
-    /**
-     * Starts the entity thread only for entities that support Runnable.
-     */
     private void startEntityThread(AbstractEntity entity)
     {
         if (!(entity instanceof Runnable))

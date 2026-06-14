@@ -2,6 +2,7 @@ package View.Frame;
 
 import Controller.Buttons.ButtonsController;
 import Controller.Map.MapController;
+import Controller.Network.PortalController;
 import Factories.EntityFactory;
 import Model.ecosystem.core.Environment;
 import Model.ecosystem.core.SimulationEngine;
@@ -189,10 +190,19 @@ public class EcoSystemFrame extends JFrame
         // Create the panels in an order that makes sense for their dependencies
         createInfoPanel();
         createMapPanel();
+        connectPortalController();
         createButtonsPanel();
         createEntitySpawnPanel();
         createStatsPanel();
         startNetworkServer();
+    }
+
+    private void connectPortalController()
+    {
+        PortalController portalController =
+                new PortalController(m_environment, m_networkManager, m_MainMapPanel);
+
+        m_InfoPanel.setPortalController(portalController);
     }
 
     private void startNetworkServer()

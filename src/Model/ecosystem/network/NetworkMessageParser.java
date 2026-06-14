@@ -2,17 +2,9 @@ package Model.ecosystem.network;
 
 import Model.ecosystem.entities.AbstractEntity;
 
-/**
- * Converts network text messages into network command objects.
- */
 public class NetworkMessageParser
 {
-    /**
-     * Parses a text message like: SPAWN,Lion,45,10,12
-     *
-     * @param message text received from the network
-     * @return matching network command, or null if the message is invalid
-     */
+    // Example message: SPAWN,Lion,45,10,5
     public NetworkCommand parse(String message)
     {
         if (message == null || message.isBlank())
@@ -37,9 +29,6 @@ public class NetworkMessageParser
         return null;
     }
 
-    /**
-     * Parses SPAWN,EntityType,Energy,X,Y into a SpawnEntityCommand.
-     */
     private NetworkCommand parseSpawnCommand(String[] parts)
     {
         if (parts.length != 5)

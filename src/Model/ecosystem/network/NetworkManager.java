@@ -13,10 +13,6 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.BlockingQueue;
 
-/**
- * Handles basic network communication for the portal feature.
- * For now it only sends and receives text messages and prints them to the console.
- */
 public class NetworkManager
 {
     public static final int DEFAULT_PORT = 12345;
@@ -30,38 +26,21 @@ public class NetworkManager
     private EntityFactory m_entityFactory;
     private Runnable m_onCommandExecuted;
 
-    /**
-     * Creates a network manager that listens on the default port.
-     */
     public NetworkManager()
     {
         this(DEFAULT_PORT);
     }
 
-    /**
-     * Creates a network manager that listens on a specific port.
-     *
-     * @param port the port used by the local server
-     */
     public NetworkManager(int port)
     {
         this(port, null, null);
     }
 
-    /**
-     * Creates a network manager that can execute received commands on the environment.
-     *
-     * @param environment local environment that receives spawned entities
-     * @param commandQueue command queue used by created living entities
-     */
     public NetworkManager(Environment environment, BlockingQueue<EcosystemCommand> commandQueue)
     {
         this(DEFAULT_PORT, environment, commandQueue);
     }
 
-    /**
-     * Creates a network manager with a custom port and model dependencies.
-     */
     public NetworkManager(int port, Environment environment, BlockingQueue<EcosystemCommand> commandQueue)
     {
         this.m_port = port;
@@ -74,9 +53,6 @@ public class NetworkManager
         }
     }
 
-    /**
-     * Starts the server listener in a background thread.
-     */
     public void startServer()
     {
         if (m_running)
@@ -85,15 +61,13 @@ public class NetworkManager
             return;
         }
 
+        // The server runs on another thread so the GUI will not freeze.
         m_running = true;
         m_serverThread = new Thread(this::listenForMessages);
         m_serverThread.setName("NetworkManager-Server");
         m_serverThread.start();
     }
 
-    /**
-     * Main server loop. It waits for incoming socket connections and reads one text message.
-     */
     private void listenForMessages()
     {
         try
@@ -131,11 +105,6 @@ public class NetworkManager
         }
     }
 
-    /**
-     * Reads and prints one text message from an accepted client connection.
-     *
-     * @param clientSocket socket connected to the sender
-     */
     private void receiveMessage(Socket clientSocket)
     {
         try (Socket socket = clientSocket;
@@ -181,26 +150,11 @@ public class NetworkManager
         }
     }
 
-    /**
-     * Sends a text message to another computer using the default port.
-     *
-     * @param targetIp target computer IP address
-     * @param message text message to send
-     * @return true if the message was sent, false otherwise
-     */
     public boolean sendMessage(String targetIp, String message)
     {
         return sendMessage(targetIp, DEFAULT_PORT, message);
     }
 
-    /**
-     * Sends a text message to another computer using a specific port.
-     *
-     * @param targetIp target computer IP address
-     * @param port target server port
-     * @param message text message to send
-     * @return true if the message was sent, false otherwise
-     */
     public boolean sendMessage(String targetIp, int port, String message)
     {
         if (targetIp == null || targetIp.isBlank())
@@ -230,9 +184,6 @@ public class NetworkManager
         }
     }
 
-    /**
-     * Stops the server and releases the port.
-     */
     public void stopServer()
     {
         m_running = false;
@@ -244,9 +195,6 @@ public class NetworkManager
         }
     }
 
-    /**
-     * Closes the server socket safely.
-     */
     private void closeServerSocket()
     {
         if (m_serverSocket == null || m_serverSocket.isClosed())
@@ -263,17 +211,11 @@ public class NetworkManager
         }
     }
 
-    /**
-     * Sets a callback that runs after a received network command was executed.
-     */
     public void setOnCommandExecuted(Runnable onCommandExecuted)
     {
         this.m_onCommandExecuted = onCommandExecuted;
     }
 
-    /**
-     * Notifies the application that the model changed because of a network command.
-     */
     private void notifyCommandExecuted()
     {
         if (m_onCommandExecuted != null)

@@ -26,6 +26,16 @@ public class TestNetwork
         server.setOnCommandExecuted(() -> System.out.println("Network callback called. GUI would repaint now."));
         server.startServer();
 
+        if (args.length > 0 && args[0].equalsIgnoreCase("server"))
+        {
+            System.out.println("TestNetwork server is waiting for messages for 60 seconds.");
+            Thread.sleep(60000);
+            System.out.println("Entities in environment: " + environment.getM_entities().size());
+            environment.printMap();
+            server.stopServer();
+            System.exit(0);
+        }
+
         Thread.sleep(500);
 
         NetworkManager client = new NetworkManager();
